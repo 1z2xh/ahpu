@@ -1,20 +1,20 @@
 // Compiler: MSVC 19.29.30038.1
 // C++ Standard: C++17
 #include <iostream>
-// #include <thread> // 这里我们用async创建线程
-#include <future> // std::async std::future
+#include <future>
 using namespace std;
-
-template<class ... Args> decltype(auto) sum(Args&&... args) {
-    // C++17折叠表达式
-    // "0 +"避免空参数包错误
-    return (0 + ... + args);
+void count_big_number() {
+    // C++14标准中，可以在数字中间加上单
+    // 引号 ' 来分隔数字，使其可读性更强
+    for (int i = 0; i <= 10'0000'0000; i++);
 }
-//线程返回值类型
+//这能是加载图片的逻辑？ 这对吗
 int main() {
-    // 注：这里不能只写函数名sum，必须带模板参数，launch::async 表示强制在新线程中执行任务。
-    future<int> val = async(launch::async, sum<int, int, int>, 1, 10, 100);
-    // future::get() 阻塞等待线程结束并获得返回值
-    cout << val.get() << endl;//val.get() 会阻塞主线程，直到异步任务完成，并返回计算的结
+    future<void> fut = async(launch::async, count_big_number);
+    cout << "Please wait" << flush;
+    // 每次等待1秒
+    while (fut.wait_for(chrono::seconds(1)) != future_status::ready)
+        cout << '.' << flush;
+    cout << endl << "Finished!" << endl;
     return 0;
 }
