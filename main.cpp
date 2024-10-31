@@ -1,98 +1,35 @@
-#include<stdio.h>
-#define SharedStackMax 100
-typedef char SharedStackType;
-typedef struct SharedStack{
-    SharedStackType data[SharedStackMax];
-    size_t top1;
-    size_t top2;
-}SharedStack;
+#include <iostream>       // 引入输入输出流库
+#include <thread>         // 引入线程库
+#include <atomic>         // 引入原子操作库
 
-void SharedStackInit(SharedStack*stack)
-{
-    if(stack==NULL)
-    {
-        return;
-    }
-    stack->top1=0;
-    stack->top2=SharedStackMax;
+using namespace std;
+//using namespace chrono;// 使用标准命名空间
+
+atomic_bool ready = 0;   // 定义一个原子布尔变量 ready，初始值为 false (0)
+
+// uintmax_t 是无符号长整型，用于表示任意长度的无符号整数
+void sleep(uintmax_t ms) { // 定义一个 sleep 函数，接受一个毫秒参数
+    this_thread::sleep_for(chrono::milliseconds(ms)); // 使当前线程睡眠指定毫秒数
 }
-void SharedStackPush1(SharedStack*stack,SharedStackType value)
-{
-    if(stack==NULL)
-    {
-        return;
-    }
-    if(stack->top1==stack->top2)
-    {
-        return;
-    }
-    stack->data[stack->top1++]=value;
+
+void count() { // 定义 count 函数，作为线程的执行函数
+    // 循环等待 ready 变量变为 true
+    while (!ready) this_thread::yield(); // 如果 ready 为 false，当前线程让出时间片
+    // 循环从 0 计数到 20'0000'0000
+    for (int i = 0; i <= 20'0000'0000; i++); // 空循环，用于模拟工作
+    // 输出当前线程的 ID 用来区别不同的线程
+    cout << "Thread " << this_thread::get_id() << " finished!" << endl;
     return;
 }
-void SharedStackPush2(SharedStack*stack,SharedStackType value)
-{
-    if(stack==NULL)
-    {
-        return;
-    }
-    if(stack->top2==stack->top1)
-    {
-        return;
-    }
-    stack->data[--stack->top2]=value;
-}
-int  SharedStackTop1(SharedStack*stack,SharedStackType*value)
-{
-    if(stack==NULL||value==NULL)
-    {
-        return 0;
-    }
-    if(stack->top1==0)
-    {
-    // 返回0表示栈为空
+
+int main() { // 主函数
+    thread th[10]; // 创建一个线程数组，最多包含 10 个线程
+    for (int i = 0; i < 10; i++) // 循环创建 10 个线程
+        th[i] = thread(::count); // 将 count 函数作为线程执行的任务
+    sleep(5000); // 主线程睡眠 5000 毫秒（5 秒）
+    ready = true; // 设置 ready 为 true，通知线程开始工作
+    cout << "Start!" << endl; // 输出 "Start!" 提示开始
+    for (int i = 0; i < 10; i++) // 循环等待所有线程完成
+        th[i].join(); // 等待线程 i 完成 会阻塞当前进程
     return 0;
-    }
-
-    // 从栈中弹出一个值
-    *value = stack->data[stack->top1-1];
-    // 成功弹出值后返回1
-    return 1;
-
-}
-int SharedStackTop2(SharedStack*stack,SharedStackType*value)
-{
-    if(stack==NULL||value==NULL)
-    {
-        return 0;
-    }
-    if(stack->top2==SharedStackMax)
-    {
-        return 0;
-    }
-    *value=stack->data[stack->top2];
-    return 1;
-}
-void SharedStackPop1(SharedStack*stack)
-{
-    if(stack==NULL)
-    {
-        return;
-    }
-    if(stack->top1==0)
-    {
-        return;
-    }
-    stack->top1--;
-}
-void SharedStackPop2(SharedStack*stack)
-{
-    if(stack==NULL)
-    {
-        return;
-    }
-    if(stack->top2==SharedStackMax)
-    {
-        return;
-    }
-    stack->top2++;
 }
