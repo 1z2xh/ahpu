@@ -1,20 +1,131 @@
-// Compiler: MSVC 19.29.30038.1
-// C++ Standard: C++17
 #include <iostream>
-#include <future>
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include "algorithm"
 using namespace std;
-void count_big_number() {
-    // C++14æ ‡å‡†ä¸­ï¼Œå¯ä»¥åœ¨æ•°å­—ä¸­é—´åŠ ä¸Šå•
-    // å¼•å· ' æ¥åˆ†éš”æ•°å­—ï¼Œä½¿å…¶å¯è¯»æ€§æ›´å¼º
-    for (int i = 0; i <= 10'0000'0000; i++);
+
+// ÅĞ¶ÏÓĞÎŞÖØ¸´ÔªËØ
+bool judge_repeat(const string& value, vector<string>& list) {
+    for (const auto& item : list) {
+        if (item == value) return true;
+    }
+    return false;
 }
-//è¿™èƒ½æ˜¯åŠ è½½å›¾ç‰‡çš„é€»è¾‘ï¼Ÿ è¿™å¯¹å—
+
+// ¶ÔÕûÀíºÃµÄ×ÛºÏÊı¾İ¿â½øĞĞ×îÖÕ½á¹ûÅĞ¶Ï
+void judge_last(const vector<string>& list) {
+    if (find(list.begin(), list.end(), "23") != list.end()) {
+        if (find(list.begin(), list.end(), "12") != list.end()) {
+            if (find(list.begin(), list.end(), "21") != list.end()) {
+                if (find(list.begin(), list.end(), "13") != list.end()) {
+                    cout << "»ÆºÖÉ«£¬ÓĞ°ßµã, ²¸ÈéÀà£¬Ê³ÈâÀà -> ½ğÇ®±ª\n";
+                    cout << "ËùÊ¶±ğµÄ¶¯ÎïÎª½ğÇ®±ª\n";
+                    return;
+                } else if (find(list.begin(), list.end(), "14") != list.end()) {
+                    cout << "»ÆºÖÉ«£¬ÓĞºÚÉ«ÌõÎÆ£¬²¸ÈéÀà£¬Ê³ÈâÀà -> »¢\n";
+                    cout << "ËùÊ¶±ğµÄ¶¯ÎïÎª»¢\n";
+                    return;
+                }
+            }
+        }
+    } else if (find(list.begin(), list.end(), "14") != list.end() &&
+               find(list.begin(), list.end(), "24") != list.end()) {
+        cout << "ÓĞºÚÉ«ÌõÎÆ£¬ÌãÀà -> °ßÂí\n";
+        cout << "ËùÊ¶±ğµÄ¶¯ÎïÎª°ßÂí\n";
+        return;
+    } else if (find(list.begin(), list.end(), "24") != list.end() &&
+               find(list.begin(), list.end(), "13") != list.end() &&
+               find(list.begin(), list.end(), "15") != list.end() &&
+               find(list.begin(), list.end(), "16") != list.end()) {
+        cout << "ÓĞ°ßµã£¬ÓĞºÚÉ«ÌõÎÆ£¬³¤²±£¬ÌãÀà -> ³¤¾±Â¹\n";
+        cout << "ËùÊ¶±ğµÄ¶¯ÎïÎª³¤¾±Â¹\n";
+        return;
+    } else if (find(list.begin(), list.end(), "20") != list.end() &&
+               find(list.begin(), list.end(), "22") != list.end()) {
+        cout << "ÉÆ·É£¬ÄñÀà -> ĞÅÌìÎÌ\n";
+        cout << "ËùÊ¶±ğµÄ¶¯ÎïÎªĞÅÌìÎÌ\n";
+        return;
+    } else if (find(list.begin(), list.end(), "22") != list.end() &&
+               find(list.begin(), list.end(), "4") != list.end() &&
+               find(list.begin(), list.end(), "15") != list.end() &&
+               find(list.begin(), list.end(), "16") != list.end()) {
+        cout << "²»»á·É£¬³¤²±£¬³¤ÍÈ£¬ÄñÀà -> ÍÒÄñ\n";
+        cout << "ËùÊ¶±ğµÄ¶¯ÎïÎªÍÒÄñ\n";
+        return;
+    } else if (find(list.begin(), list.end(), "4") != list.end() &&
+               find(list.begin(), list.end(), "22") != list.end() &&
+               find(list.begin(), list.end(), "18") != list.end() &&
+               find(list.begin(), list.end(), "19") != list.end()) {
+        cout << "²»»á·É£¬»áÓÎÓ¾£¬ºÚ°×¶şÉ«£¬ÄñÀà -> Æó¶ì\n";
+        cout << "ËùÊ¶±ğµÄ¶¯ÎïÎªÆó¶ì\n";
+        return;
+    } else {
+        cout << "\n¸ù¾İËù¸øÌõ¼şÎŞ·¨ÅĞ¶ÏÎªºÎÖÖ¶¯Îï\n";
+    }
+}
+
 int main() {
-    future<void> fut = async(launch::async, count_big_number);
-    cout << "Please wait" << flush;
-    // æ¯æ¬¡ç­‰å¾…1ç§’
-    while (fut.wait_for(chrono::seconds(1)) != future_status::ready)
-        cout << '.' << flush;
-    cout << endl << "Finished!" << endl;
+    unordered_map<string, string> dict_before = {
+            {"1", "ÓĞÃ«·¢"}, {"2", "²úÄÌ"}, {"3", "ÓĞÓğÃ«"}, {"4", "²»»á·É"}, {"5", "»áÏÂµ°"},
+            {"6", "³ÔÈâ"}, {"7", "ÓĞÈ®³İ"}, {"8", "ÓĞ×¦"}, {"9", "ÑÛ¶¢Ç°·½"}, {"10", "ÓĞÌã"},
+            {"11", "·´Û»"}, {"12", "»ÆºÖÉ«"}, {"13", "ÓĞ°ßµã"}, {"14", "ÓĞºÚÉ«ÌõÎÆ"}, {"15", "³¤²±"},
+            {"16", "³¤ÍÈ"}, {"17", "²»»á·É"}, {"18", "»áÓÎÓ¾"}, {"19", "ºÚ°×¶şÉ«"}, {"20", "ÉÆ·É"},
+            {"21", "²¸ÈéÀà"}, {"22", "ÄñÀà"}, {"23", "Ê³ÈâÀà"}, {"24", "ÌãÀà"}
+    };
+
+    vector<string> list_real;
+    cout << "ÊäÈë¶ÔÓ¦Ìõ¼şÇ°ÃæµÄÊı×Ö:\n";
+    cout << "*******************µ±ÊäÈëÊı×Ö0Ê±!³ÌĞò½áÊø***************\n";
+
+    string num_real;
+    while (true) {
+        cout << "ÇëÊäÈë£º";
+        cin >> num_real;
+        if (num_real == "0") break;
+        list_real.push_back(num_real);
+    }
+
+    cout << "\nÇ°ÌáÌõ¼şÎª£º\n";
+    for (const auto& code : list_real) {
+        cout << dict_before[code] << " ";
+    }
+    cout << "\nÍÆÀí¹ı³ÌÈçÏÂ£º\n";
+
+    for (const auto& i : list_real) {
+        if (i == "1" && !judge_repeat("21", list_real)) {
+            list_real.push_back("21");
+            cout << "ÓĞÃ«·¢ -> ²¸ÈéÀà\n";
+        } else if (i == "2" && !judge_repeat("21", list_real)) {
+            list_real.push_back("21");
+            cout << "²úÄÌ -> ²¸ÈéÀà\n";
+        } else if (i == "3" && !judge_repeat("22", list_real)) {
+            list_real.push_back("22");
+            cout << "ÓĞÓğÃ« -> ÄñÀà\n";
+        }
+    }
+
+    for (const auto& i : list_real) {
+        if (i == "4" && find(list_real.begin(), list_real.end(), "5") != list_real.end() &&
+            !judge_repeat("22", list_real)) {
+            list_real.push_back("22");
+            cout << "²»»á·É£¬»áÏÂµ° -> ÄñÀà\n";
+        } else if (i == "6" && find(list_real.begin(), list_real.end(), "21") != list_real.end() &&
+                   !judge_repeat("23", list_real)) {
+            list_real.push_back("23");
+            cout << "Ê³Èâ -> ²¸ÈéÀà\n";
+        } else if (i == "7" && find(list_real.begin(), list_real.end(), "8") != list_real.end() &&
+                   find(list_real.begin(), list_real.end(), "9") != list_real.end() &&
+                   !judge_repeat("23", list_real)) {
+            list_real.push_back("23");
+            cout << "ÓĞÈ®³İ,ÓĞ×¦,ÑÛ¶¢Ç°·½ -> Ê³ÈâÀà\n";
+        } else if (i == "10" && find(list_real.begin(), list_real.end(), "21") != list_real.end() &&
+                   !judge_repeat("24", list_real)) {
+            list_real.push_back("24");
+            cout << "ÓĞÌã£¬²¸ÈéÀà -> ÌãÀà\n";
+        }
+    }
+
+    judge_last(list_real);
     return 0;
 }
